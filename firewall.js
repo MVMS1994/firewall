@@ -137,14 +137,14 @@ server.on('connect', (req, socket, head) => {
     .then(function(result) {
       if(result) {
         console.log("Blocking ", endPoint.hostname);
-        socket.write("HTTP/" + httpVersion + " 500 Connection Gone\r\n\r\n");
+        socket.write("HTTP/1.1" + " 500 Connection Gone\r\n\r\n");
         return;
       }
       var proxySocket = new net.Socket();
       proxySocket.connect(endPoint.port, endPoint.hostname, () => {
         console.log("Connected to ", endPoint.hostname);
         proxySocket.write(head);
-        socket.write("HTTP/" + httpVersion + " 200 Connection established\r\n\r\n");
+        socket.write("HTTP/1.1" + " 200 Connection established\r\n\r\n");
         proxySocket.pipe(socket);
         socket.pipe(proxySocket);
       });
