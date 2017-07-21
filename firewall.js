@@ -88,23 +88,9 @@ app.use('/block', function(req, res) {
   });
 });
 
-app.use('/test', function(req, res, next) {
-  req.url = "http://www.sastra.edu"
-  var body = "";
-  proxier(req, res);
-  req.on('data', function (data) {
-    body += data;
-  });
-
-  req.on('end', function () {
-    var post = qs.parse(body);
-    logger(req.url, req.headers, req.query, post);
-  });
-})
-
 app.use('/', function(req, res, next) {
   var body = "";
-  if(req.headers.host == "localhost:5000") req.url = "http://www.sastra.edu" + req.url;
+  
   req.on('data', function (data) {
     body += data;
 	});
