@@ -1,10 +1,10 @@
 {
   "name": "firewall",
   "version": "0.0.1",
-  "description": "A node js forward proxy server that not only just proxies, but also protects you from trackers.",
+  "description": "Just a in-place proxy server",
   "main": "firewall.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node firewall.js"
   },
   "repository": {
     "type": "git",
@@ -20,12 +20,6 @@
   },
   "homepage": "https://github.com/MVMS1994/firewall#readme",
   "dependencies": {
-    "asyncawait": "^1.0.6",
-    "bluebird": "^3.4.6",
-    "express": "^4.14.0",
-    "helmet": "^3.1.0",
-    "http-proxy": "^1.15.2",
-    "redis": "^2.6.3",
-    "request": "^2.79.0"
+    "mitm-server": "^1.6.0"
   }
 }
