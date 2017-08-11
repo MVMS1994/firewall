@@ -4,7 +4,7 @@
   "description": "Just a in-place proxy server",
   "main": "firewall.js",
   "scripts": {
-    "start": "node firewall.js"
+    "start": "forever firewall.js"
   },
   "repository": {
     "type": "git",

@@ -5,13 +5,17 @@ var url = require('url')
  
 var options = {
   certDir: './cert-cache',
-  caCertPath: './certs/cacert.pem',
-  caKeyPath: './certs/cakey.pem'
+  caCertPath: './veera.in.crt',
+  caKeyPath: './veera.in.key'
 }
  
-var server = new MITMServer(options, handler)
- 
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+});
+
+var server = new MITMServer(options, handler);  
 server.listen(8000)
+
  
 function handler (req, res, secure) {
   var module = secure ? https : http
@@ -24,8 +28,9 @@ function handler (req, res, secure) {
     path: url.parse(req.url).path
   }
   console.log(reqOptions);
- 
-  req.pipe(module.request(reqOptions, onResponse))
+  
+  req.pipe(module.request(reqOptions, onResponse))  
+  
  
   function onResponse (response) {
     res.writeHead(response.statusCode, response.headers)
