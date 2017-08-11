@@ -5,8 +5,8 @@ var url = require('url')
  
 var options = {
   certDir: './cert-cache',
-  caCertPath: './veera.in.crt',
-  caKeyPath: './veera.in.key'
+  caCertPath: './certs/veera.in.crt',
+  caKeyPath: './certs/veera.in.key'
 }
  
 process.on('uncaughtException', function(err) {
