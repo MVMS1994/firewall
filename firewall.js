@@ -1,18 +1,14 @@
 var url = require('url');
 var net = require('net');
 var http = require('http');
-var Redis = require('redis');
 var helmet = require('helmet');
 var qs = require('querystring');
 var express = require('express');
 var request = require('request');
-var Promise = require('bluebird');
 var httpProxy = require('http-proxy');
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
+var util = require('util');
 
 var app  = express();
-var redis = Promise.promisifyAll(Redis.createClient());
 var server = http.createServer(app);
 var proxy = httpProxy.createProxyServer();
 app.use(helmet());
@@ -45,48 +41,13 @@ proxier = (req, res) => {
 	}
 }
 
-var isBlacklisted = async (function(url) {
-  var shouldBlock = false;
-  var blocked = JSON.parse(await (redis.getAsync('blackListed'))) || [];
-  
-  blocked.forEach((item, index) => {
-    var res = url.match(new RegExp(item));
-    if(res) { 
-      shouldBlock = true;
-    }
-  });
-  return shouldBlock;
-});
-
-app.use('/unblock', function(req, res) {  
-  redis.get('blackListed', function(err, reply) {
-    var list = JSON.parse(reply) || [];
-    list = list.filter((item) => {return (new String(item) != req.query.item);});
-    redis.set('blackListed', JSON.stringify(list), function(err, reply) {
-      res.send({
-        error: err,
-        reply: reply
-      });
-    }); 
-  });
-});
+async function isBlacklisted(url) {
+  return false;
+}
 
 app.use('/favicon.ico', function(req, res) {
   res.sendStatus(200);
 })
-
-app.use('/block', function(req, res) {
-  redis.get('blackListed', function(err, reply) {
-    var list = JSON.parse(reply) || [];
-    list = list.concat(JSON.parse(req.query.list));
-    redis.set('blackListed', JSON.stringify(list), function(err, reply) {
-      res.send({
-        error: err,
-        reply: reply
-      }); 
-    });
-  });
-});
 
 app.use('/', function(req, res, next) {
   var body = "";
