@@ -6,13 +6,11 @@ var helmet = require('helmet');
 var qs = require('querystring');
 var express = require('express');
 var request = require('request');
-var Promise = require('bluebird');
+var bluebird = require('bluebird');
 var httpProxy = require('http-proxy');
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
 
 var app  = express();
-var redis = Promise.promisifyAll(Redis.createClient());
+var redis = bluebird.promisifyAll(Redis.createClient());
 var server = http.createServer(app);
 var proxy = httpProxy.createProxyServer();
 app.use(helmet());
@@ -45,7 +43,7 @@ proxier = (req, res) => {
 	}
 }
 
-var isBlacklisted = async (function(url) {
+var isBlacklisted = async function(url) {
   var shouldBlock = false;
   var blocked = JSON.parse(await (redis.getAsync('blackListed'))) || [];
   
@@ -56,7 +54,7 @@ var isBlacklisted = async (function(url) {
     }
   });
   return shouldBlock;
-});
+};
 
 app.use('/unblock', function(req, res) {  
   redis.get('blackListed', function(err, reply) {
