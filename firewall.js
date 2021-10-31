@@ -5,26 +5,27 @@ const helmet = require('helmet');
 const qs = require('querystring');
 const express = require('express');
 const httpProxy = require('http-proxy');
-const winston = require('winston');
 
 const app  = express();
 const server = http.createServer(app);
+const LOG = require("./logger");
+
 const proxy = httpProxy.createProxyServer();
 app.use(helmet()); // for setting so many default headers.
 
 const logger = (url, headers, query, body) => {
-	console.log("/-----------------------------------------------/");
-	console.log(url);
-	console.log(headers);
-	console.log(query);
-	console.log(body);
-	console.log("/-----------------------------------------------/");
+	LOG.info("/-----------------------------------------------/");
+	LOG.info(url);
+	LOG.info(headers);
+	LOG.info(query);
+	LOG.info(body);
+	LOG.info("/-----------------------------------------------/");
 }
 
 const proxier = (req, res) => {
 	let target = url.parse(req.url);
   proxy.web(req, res, { target: target.protocol + '//' + target.host }, function(error) {
-    console.log(error);
+    LOG.error(error);
     res.status(500).send(error);
   });
 }
@@ -54,7 +55,7 @@ server.on('connect', (req, socket, head) => {
 
     let proxySocket = new net.Socket();
     proxySocket.connect(endPoint.port, endPoint.hostname, () => {
-      console.log("Connected to ", endPoint.hostname);
+      LOG.info("Connected to ", endPoint.hostname);
       proxySocket.write(head);
       socket.write("HTTP/1.1" + " 200 Connection established\r\n\r\n");
       proxySocket.pipe(socket);
@@ -62,22 +63,22 @@ server.on('connect', (req, socket, head) => {
     });
 
     // proxySocket.on('data', (chunk) => {
-    //   // console.log('data length = %d', chunk.length);
+    //   // LOG.info('data length = %d', chunk.length);
     // });
     //
     // socket.on('data', (chunk) => {
-    //   // console.log('data length = %d', chunk.length);
+    //   // LOG.info('data length = %d', chunk.length);
     // });
 
     proxySocket.on('error', (err) => {
-      console.log(err);
+      LOG.error(err);
     });
 
     socket.on('error', (err) => {
-      console.log(err);
+      LOG.error(err);
     });
   } catch(err) {
-    console.log(err);
+    LOG.error(err);
   }
 });
 
@@ -92,5 +93,5 @@ server.on('upgrade', (req, socket, head) => {
 
 
 server.listen(5000, function() {
-	console.log("Listening http at port " + 5000);
+	LOG.info("Listening http at port " + 5000);
 });
