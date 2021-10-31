@@ -1,53 +1,10 @@
 const url = require('url');
 const net = require('net');
 const http = require('http');
-const helmet = require('helmet');
-const qs = require('querystring');
-const express = require('express');
-const httpProxy = require('http-proxy');
 
-const app  = express();
-const server = http.createServer(app);
+const app = require("./proxy");
 const LOG = require("./logger");
-
-const proxy = httpProxy.createProxyServer();
-app.use(helmet()); // for setting so many default headers.
-
-const logger = (url, headers, query, body) => {
-	LOG.info("/-----------------------------------------------/");
-	LOG.info(url);
-	LOG.info(headers);
-	LOG.info(query);
-	LOG.info(body);
-	LOG.info("/-----------------------------------------------/");
-}
-
-const proxier = (req, res) => {
-	let target = url.parse(req.url);
-  proxy.web(req, res, { target: target.protocol + '//' + target.host }, function(error) {
-    LOG.error(error);
-    res.status(500).send(error);
-  });
-}
-
-app.use('/ping', function(req, res) {
-  res.send('pong');
-});
-
-app.use('/', function(req, res, next) {
-  let body = "";
-  
-  req.on('data', function (data) {
-    body += data;
-	});
-
-	req.on('end', function () {
-    let post = qs.parse(body);
-		logger(req.url, req.headers, req.query, post);
-	});
-  proxier(req, res);
-});
-
+const server = http.createServer(app);
 
 server.on('connect', (req, socket, head) => {
   try {

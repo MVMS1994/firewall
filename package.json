@@ -21,15 +21,24 @@
   },
   "homepage": "https://github.com/MVMS1994/firewall#readme",
   "dependencies": {
+    "aws-sdk": "^2.1018.0",
     "express": "^4.14.0",
     "helmet": "^3.1.0",
-    "http-proxy": "^1.15.2"
+    "http-lambda-proxy": "^1.1.4",
+    "http-proxy": "^1.15.2",
+    "querystring": "^0.2.1",
+    "serverless-http": "^2.7.0"
   },
   "devDependencies": {
+    "aws-xray-sdk": "^3.3.3",
     "nodemon": "^2.0.14"
   },
   "nodemonConfig": {
-    "watch": ["./firewall.js", "./logger.js"],
+    "watch": [
+      "./firewall.js",
+      "./logger.js",
+      "./proxy.js"
+    ],
     "exec": "node firewall.js"
   }
 }
