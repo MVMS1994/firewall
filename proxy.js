@@ -1,6 +1,5 @@
-const url = require('url');
+const { URL } = require('url');
 const helmet = require('helmet');
-const qs = require('querystring');
 const express = require('express');
 const httpProxy = require('http-proxy');
 
@@ -20,7 +19,7 @@ const logger = (url, headers, query, body) => {
 }
 
 const proxier = (req, res, _url) => {
-  let target = url.parse(_url);
+  let target = new URL(_url);
   proxy.web(req, res, { target: target.protocol + '//' + target.host }, function(error) {
     LOG.error(error);
     res.status(500).send(error);
@@ -32,17 +31,24 @@ app.use('/ping', function(req, res) {
 });
 
 app.use('/', function(req, res, next) {
-  let body = "";
+  let body = [];
 
   req.on('data', function (data) {
-    body += data;
+    if(data) {
+      body.push(data);
+    }
   });
 
   req.on('end', function () {
-    let post = qs.parse(body);
+    let post = Buffer.concat(body).toString();
     logger(req.url, req.headers, req.query, post);
   });
-  proxier(req, res, req.headers["x-custom-url"] || req.url);
+
+  if(req.secure) {
+    proxier(req, res, "https://" + req.headers["host"] + req.url);
+  } else {
+    proxier(req, res, req.headers["x-custom-url"] || req.url);
+  }
 });
 
 module.exports = app;
