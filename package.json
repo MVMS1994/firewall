@@ -5,6 +5,7 @@
   "main": "firewall.js",
   "scripts": {
     "dev": "nodemon",
+    "start": "node firewall.js",
     "test": "echo \"Error: no test specified\""
   },
   "repository": {
