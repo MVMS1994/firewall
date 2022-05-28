@@ -49,6 +49,6 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 
-server.listen(5000, function() {
-	LOG.info("Listening http at port " + 5000);
+server.listen(process.env.PORT || 5000, function() {
+	LOG.info("Listening http at port " + process.env.PORT || 5000);
 });
