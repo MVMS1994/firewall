@@ -8,6 +8,7 @@ const server = http.createServer(app);
 
 server.on('connect', (req, socket, head) => {
   try {
+    console.log("came here")
     let endPoint = url.parse(`http://${req.url}`);
 
     let proxySocket = new net.Socket();
