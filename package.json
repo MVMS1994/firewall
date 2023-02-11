@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "aws-xray-sdk": "^3.3.3",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.20"
   },
   "nodemonConfig": {
     "watch": [
