@@ -1,12 +1,11 @@
-const url = require('url');
-const helmet = require('helmet');
-const qs = require('querystring');
-const express = require('express');
-const httpProxy = require('http-proxy');
+import url from 'url';
+import helmet from 'helmet';
+import qs from 'querystring';
+import express from 'express';
+import httpProxy from 'http-proxy';
+import LOG from "./logger.js";
 
-const app  = express();
-const LOG = require("./logger");
-
+const app = express();
 const proxy = httpProxy.createProxyServer();
 app.use(helmet()); // for setting so many default headers.
 
@@ -20,11 +19,11 @@ const logger = (url, headers, query, body) => {
 }
 
 var blocked = [];
-export var isBlacklisted = function(url) {
+export var isBlacklisted = function(_url) {
   var shouldBlock = false;
 
   blocked.forEach((item) => {
-    var res = url.match(new RegExp(item));
+    var res = _url.match(new RegExp(item));
     if(res) {
       shouldBlock = true;
     }
@@ -78,7 +77,4 @@ app.use('/', function(req, res, next) {
   }
 });
 
-module.exports = {
-  app,
-  isBlacklisted
-};
+export default app;

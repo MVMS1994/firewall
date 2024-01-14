@@ -1,6 +1,6 @@
-logger = {
-  info: console.info,
-  error: console.error
-}
+export const info = console.info;
+export const error = console.error;
 
-module.exports = logger;
+export default {
+  info, error
+}

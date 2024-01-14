@@ -1,14 +1,14 @@
-const url = require('url');
-const net = require('net');
-const http = require('http');
+import { parse } from 'url';
+import { Socket } from 'net';
+import { createServer } from 'http';
 
-const proxy = require("./proxy");
-const LOG = require("./logger");
-const server = http.createServer(proxy.app);
+import app, { isBlacklisted } from "./proxy.js";
+import { info, error } from "./logger.js";
+const server = createServer(app);
 
 server.on('connect', (req, socket, head) => {
   try {
-    let endPoint = url.parse(`http://${req.url}`);
+    let endPoint = parse(`http://${req.url}`);
 
     if(isBlacklisted(endPoint.hostname)) {
       console.log("Blocking...", endPoint.hostname);
@@ -16,9 +16,9 @@ server.on('connect', (req, socket, head) => {
       return;
     }
 
-    let proxySocket = new net.Socket();
+    let proxySocket = new Socket();
     proxySocket.connect(endPoint.port, endPoint.hostname, () => {
-      LOG.info("Connected to ", endPoint.hostname);
+      info("Connected to ", endPoint.hostname);
       proxySocket.write(head);
       socket.write("HTTP/1.1" + " 200 Connection established\r\n\r\n");
       proxySocket.pipe(socket);
@@ -34,14 +34,14 @@ server.on('connect', (req, socket, head) => {
     // });
 
     proxySocket.on('error', (err) => {
-      LOG.error(err);
+      error(err);
     });
 
     socket.on('error', (err) => {
-      LOG.error(err);
+      error(err);
     });
   } catch(err) {
-    LOG.error(err);
+    error(err);
   }
 });
 
@@ -56,5 +56,5 @@ server.on('upgrade', (req, socket, head) => {
 
 
 server.listen(process.env.PORT || 5000, function() {
-	LOG.info("Listening http at port " + process.env.PORT || 5000);
+	info("Listening http at port " + (process.env.PORT || 5000));
 });
