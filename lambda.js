@@ -1,1 +1,0 @@
-exports.handler = require('serverless-http')(require("./proxy"));

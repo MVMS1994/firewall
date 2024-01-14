@@ -2,13 +2,19 @@ const url = require('url');
 const net = require('net');
 const http = require('http');
 
-const app = require("./proxy");
+const proxy = require("./proxy");
 const LOG = require("./logger");
-const server = http.createServer(app);
+const server = http.createServer(proxy.app);
 
 server.on('connect', (req, socket, head) => {
   try {
     let endPoint = url.parse(`http://${req.url}`);
+
+    if(isBlacklisted(endPoint.hostname)) {
+      console.log("Blocking...", endPoint.hostname);
+      socket.write("HTTP/1.1" + " 500 Connection Gone\r\n\r\n");
+      return;
+    }
 
     let proxySocket = new net.Socket();
     proxySocket.connect(endPoint.port, endPoint.hostname, () => {
